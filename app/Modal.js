@@ -1,10 +1,15 @@
 "use client"
+import AirwallexFingerprint from './components/AirwallexFingerprint';
+import { getOrderSessionId } from './components/AirwallexFingerprint';
+
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import ReactDom from 'react-dom'
 import { useState, useContext, useEffect } from 'react';
 import useCart from './(store)/store'
 import { loadAirwallex, redirectToCheckout } from 'airwallex-payment-elements'
+
+
 export default function Modal() {
     const closeModal = useCart(state => state.setOpenModal)
     const cartItems = useCart(state => state.cart)
@@ -72,12 +77,15 @@ export default function Modal() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.target;
+        const device_id = getOrderSessionId();
+
         const paymentData = {
             payment_intent_id: paymentIntentId, // Already in your state
             card_number: form.card_number.value,
             expiry_month: form.expiry.value.split('/')[0].trim(),
             expiry_year: '20' + form.expiry.value.split('/')[1].trim(),
             cvc: form.cvc.value,
+            device_id,
         };
 
         const response = await fetch('/api/confirm-payment', {
@@ -101,6 +109,8 @@ export default function Modal() {
     if (showCheckout && checkoutData) {
         return (
             <div className="fixed top-0 left-0 w-screen h-screen z-50 grid place-items-center bg-black/60">
+                {/* Place the AirwallexFingerprint here */}
+                <AirwallexFingerprint />
                 <div className="bg-white p-8 rounded shadow-lg min-w-[350px]">
                     <h2 className="text-xl mb-4">Checkout Form</h2>
                     <div>Total amount: <b>£{getTotalCost().toFixed(2)}</b></div>

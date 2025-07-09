@@ -1,29 +1,33 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-It's a simple ecommerce app that integrates with [**Airwallex Hosted Payment Page**](https://www.airwallex.com/docs/payments__hosted-payment-page)
+It's a simple [Next.js](https://nextjs.org/) ecommerce demo app that integrates **natively** with the [Airwallex Payments API](https://www.airwallex.com/docs/api#/Payment_Acceptance/Payment_Intents/) for direct payment intent creation and confirmation  
+Additionally, the app implements `device fingerprint` for enhanced payment fraud prevention as recommended by Airwallex ([Device Fingerprint docs](https://www.airwallex.com/docs/payments__native-api__device-fingerprinting))
 
 ## Getting Started
 
-Steps to run the app:
-1. Update the `.env` file with a valid Bearer token
-2. On the home directory run `npm install` for installing the dependencies
-3. `npm run dev` will run both the server and the client
-4. Open [http://localhost:3000](http://localhost:3000) with your browser  
+1. Update the `.env` file with a valid Bearer token from your Airwallex account.
+2. In the project root, run `npm install` to install dependencies.
+3. Run `npm run dev` to start the Next.js development server.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## E2E Flow
+
+1. Add products to your cart.
+2. Click the cart icon to open the Cart Modal (`Modal.js`).
+3. In the modal, click `Checkout`, which triggers the `checkout()` function.
+4. `checkout()` calculates the total and currency, then calls the backend API (`api/checkout/route.js`) to create a payment intent using the **native Airwallex Payments API**.
+5. The backend returns the payment intent ID and client secret, which are used on the frontend to collect payment details and make the payment confirmation request directly via your backend (`api/confirm-payment/route.js`).
 
 
-## E2E flow
-1. Add the products to the cart
-2. Click on the cart --> this calls the `Modal.js`
-3. On the Modal click `Checkout` and this triggers the `checkout()` function
-4. The `chekcout()` has alreeady the total cost and the currency and call the `route.js`
-5. From the `route.js` we call the `create-intent` endpoint of Airwallex
-6. The `create-intent` returns the `client-id` and `client secret`
-7. Both are passed back to front end and they used to call the `redirectToCheckout()` (more details about the redirecttoCheckout() can be found [here](https://github.com/airwallex/airwallex-payment-demo/tree/master/docs#redirectToCheckout))
+## Device Fingerprinting (Fraud Prevention)
 
+Device fingerprinting is implemented according to Airwallex guidelines:
+- On checkout, the app injects the official Airwallex device fingerprint script with a session ID (`data-order-session-id`).
+- A unique session ID is generated on the client for each checkout attempt using a UUID, and is stored in `sessionStorage` for the duration of the checkout.
+- This ID is injected into both:
+    - The fingerprinting script (passed as `data-order-session-id`)
+    - The payment confirmation API request (`device_data.device_id`) to Airwallex for end-to-end tracking and fraud protection.
 
-## Code explantion
-`api/checkout/route.js` ==> this the backend, where we call the Airwallex API to create the payment intent
+You can find the fingerprint integration in `components/AirwallexFingerprint.js`, which is loaded only during checkout.
 
-`Header.js` ==> code to handle the cart which is on the header
+You can use the device-id to retrieve the logs in splunk
 
-`app/ProductCard.js` ==> the card of each product
