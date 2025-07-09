@@ -1,0 +1,38 @@
+# Node.js dependencies
+node_modules/
+
+# Production build output
+.next/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+
+# Dependency lockfiles (optional — ignore only if you don’t want to track lockfile)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Build artifacts
+build/
+dist/
+
+# Misc
+*.log
