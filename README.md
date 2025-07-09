@@ -29,5 +29,5 @@ Device fingerprinting is implemented according to Airwallex guidelines:
 
 You can find the fingerprint integration in `components/AirwallexFingerprint.js`, which is loaded only during checkout.
 
-You can use the device-id to retrieve the logs in splunk
+You can use the device-id to retrieve the logs in splun
 
